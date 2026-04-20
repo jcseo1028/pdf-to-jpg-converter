@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdf-to-jpg-converter"
+version = "0.1.0"
+description = "Minimal PDF to JPG converter with a simple GUI for Windows."
+requires-python = ">=3.10"
+dependencies = [
+  "Pillow>=11,<12",
+  "PyMuPDF>=1.25,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pyinstaller>=6,<7",
+  "pytest>=8,<9",
+]
+
+[project.scripts]
+pdf-to-jpg-converter = "pdf_to_jpg_converter.app:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
