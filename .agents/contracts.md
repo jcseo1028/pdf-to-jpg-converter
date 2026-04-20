@@ -2,7 +2,8 @@
 
 ## Contract Types
 
-### Change Request Contract
+### Change Request Contract Schema
+
 ```text
 ChangeRequestContract {
   id: string
@@ -12,7 +13,8 @@ ChangeRequestContract {
 }
 ```
 
-### Module Contract
+### Module Contract Schema
+
 ```text
 ModuleContract {
   name: string
@@ -23,7 +25,8 @@ ModuleContract {
 }
 ```
 
-### Data Contract
+### Data Contract Schema
+
 ```text
 DataContract {
   name: string
@@ -34,6 +37,7 @@ DataContract {
 ```
 
 ## Contract Rules
+
 - Keep every contract explicit, small, and self-contained.
 - Use the same field names and terms across all documents.
 - Prefer additive changes over breaking changes.
@@ -42,29 +46,32 @@ DataContract {
 
 ## Repository Contracts
 
-### Module Contract
+### GUI Module Contract
+
 ```text
 ModuleContract {
   name: "GUI Module"
-  responsibility: "Select a PDF file, show a preview, and trigger page-by-page JPG conversion."
+  responsibility: "Select a PDF file, show a first-page preview, and trigger page-by-page JPG conversion."
   inputs: ["pdf_path", "output_directory"]
-  outputs: ["preview_image", "conversion_request"]
+  outputs: ["first_page_preview", "conversion_request", "conversion_result"]
   dependencies: ["Conversion Module"]
 }
 ```
 
-### Module Contract
+### Conversion Module Contract
+
 ```text
 ModuleContract {
   name: "Conversion Module"
-  responsibility: "Read a PDF file and write one JPG image per page."
+  responsibility: "Read a PDF file and write one JPG image per page using deterministic page-based filenames."
   inputs: ["pdf_path", "output_directory"]
   outputs: ["jpg_file_paths"]
   dependencies: []
 }
 ```
 
-### Data Contract
+### ConversionRequest Data Contract
+
 ```text
 DataContract {
   name: "ConversionRequest"
@@ -77,7 +84,8 @@ DataContract {
 }
 ```
 
-### Data Contract
+### ConversionResult Data Contract
+
 ```text
 DataContract {
   name: "ConversionResult"
@@ -86,6 +94,20 @@ DataContract {
   fields: [
     { name: "page_count", type: "integer", required: true },
     { name: "jpg_file_paths", type: "string[]", required: true }
+  ]
+}
+```
+
+### GeneratedJpgFile Data Contract
+
+```text
+DataContract {
+  name: "GeneratedJpgFile"
+  producer: "Conversion Module"
+  consumer: "End User"
+  fields: [
+    { name: "file_name_pattern", type: "string", required: true },
+    { name: "format", type: "string", required: true }
   ]
 }
 ```
