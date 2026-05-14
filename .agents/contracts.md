@@ -51,10 +51,10 @@ DataContract {
 ```text
 ModuleContract {
   name: "GUI Module"
-  responsibility: "Select a PDF file, show a first-page preview, and trigger page-by-page JPG conversion."
-  inputs: ["pdf_path", "output_directory"]
-  outputs: ["first_page_preview", "conversion_request", "conversion_result"]
-  dependencies: ["Conversion Module"]
+  responsibility: "Select a PDF file, show a first-page preview, trigger page-by-page JPG conversion, trigger Korean translation save-as to PDF, and present non-blocking translation progress in the UI."
+  inputs: ["pdf_path", "output_directory", "output_pdf_path"]
+  outputs: ["first_page_preview", "conversion_request", "conversion_result", "translation_request", "translation_progress_event", "translation_result"]
+  dependencies: ["Conversion Module", "Translation Module"]
 }
 ```
 
@@ -66,6 +66,18 @@ ModuleContract {
   responsibility: "Read a PDF file and write one JPG image per page using deterministic page-based filenames."
   inputs: ["pdf_path", "output_directory"]
   outputs: ["jpg_file_paths"]
+  dependencies: []
+}
+```
+
+### Translation Module Contract
+
+```text
+ModuleContract {
+  name: "Translation Module"
+  responsibility: "Read a PDF file, translate extracted text into Korean, write a new translated PDF file, and optionally emit per-page progress updates."
+  inputs: ["pdf_path", "output_pdf_path", "progress_callback(optional)"]
+  outputs: ["translation_progress_event(optional)", "translation_result"]
   dependencies: []
 }
 ```
@@ -94,6 +106,51 @@ DataContract {
   fields: [
     { name: "page_count", type: "integer", required: true },
     { name: "jpg_file_paths", type: "string[]", required: true }
+  ]
+}
+```
+
+### TranslationRequest Data Contract
+
+```text
+DataContract {
+  name: "TranslationRequest"
+  producer: "GUI Module"
+  consumer: "Translation Module"
+  fields: [
+    { name: "pdf_path", type: "string", required: true },
+    { name: "output_pdf_path", type: "string", required: true },
+    { name: "target_language", type: "string", required: true },
+    { name: "progress_callback", type: "callable|null", required: false }
+  ]
+}
+```
+
+### TranslationProgressEvent Data Contract
+
+```text
+DataContract {
+  name: "TranslationProgressEvent"
+  producer: "Translation Module"
+  consumer: "GUI Module"
+  fields: [
+    { name: "current_page", type: "integer", required: true },
+    { name: "total_pages", type: "integer", required: true }
+  ]
+}
+```
+
+### TranslationResult Data Contract
+
+```text
+DataContract {
+  name: "TranslationResult"
+  producer: "Translation Module"
+  consumer: "GUI Module"
+  fields: [
+    { name: "page_count", type: "integer", required: true },
+    { name: "output_pdf_path", type: "string", required: true },
+    { name: "target_language", type: "string", required: true }
   ]
 }
 ```

@@ -1,0 +1,2 @@
+[console_scripts]
+pdf-to-jpg-converter = pdf_to_jpg_converter.app:main

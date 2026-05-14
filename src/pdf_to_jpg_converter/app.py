@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+import logging
+
+# Configure logging
+logging.basicConfig(
+    filename="application.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
 from pdf_to_jpg_converter.gui import build_app
 
 

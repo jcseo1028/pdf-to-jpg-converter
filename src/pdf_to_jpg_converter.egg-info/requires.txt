@@ -1,0 +1,7 @@
+deep-translator<2,>=1.11
+Pillow<12,>=11
+PyMuPDF<2,>=1.25
+
+[dev]
+pyinstaller<7,>=6
+pytest<9,>=8

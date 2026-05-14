@@ -2,4 +2,7 @@ param(
     [string]$PythonExe = "python"
 )
 
-& $PythonExe -m PyInstaller --noconfirm --clean --windowed --name "pdf-to-jpg-converter" --paths "src" "src/pdf_to_jpg_converter/app.py"
+$ErrorActionPreference = "Stop"
+
+& $PythonExe -m pip install -e ".[dev]"
+& $PythonExe -m PyInstaller --noconfirm --clean --windowed --name "pdf-to-jpg-converter" --paths "src" --hidden-import deep_translator "src/pdf_to_jpg_converter/app.py"
